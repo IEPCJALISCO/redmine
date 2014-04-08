@@ -373,6 +373,20 @@ class IssuesControllerTest < ActionController::TestCase
     assert_select 'form#csv-export-form[action=/issues.csv]'
   end
 
+  def test_index_should_not_warn_when_not_exceeding_export_limit
+    with_settings :issues_export_limit => 200 do
+      get :index
+      assert_select '#csv-export-options p.icon-warning', 0
+    end
+  end
+
+  def test_index_should_warn_when_exceeding_export_limit
+    with_settings :issues_export_limit => 2 do
+      get :index
+      assert_select '#csv-export-options p.icon-warning', :text => %r{limit: 2}
+    end
+  end
+
   def test_index_csv
     get :index, :format => 'csv'
     assert_response :success
@@ -2272,7 +2286,7 @@ class IssuesControllerTest < ActionController::TestCase
                                 :subject => 'This is an issue',
                                 :status_id => 1}
         end
-        issue = Issue.last(:order => 'id')
+        issue = Issue.order('id').last
         assert_equal IssueStatus.default, issue.status
       end
 
@@ -3371,7 +3385,7 @@ class IssuesControllerTest < ActionController::TestCase
 
     assert_response 302
     # check that the issues were updated
-    assert_equal [7, 7], Issue.find_all_by_id([1, 2]).collect {|i| i.priority.id}
+    assert_equal [7, 7], Issue.where(:id =>[1, 2]).collect {|i| i.priority.id}
 
     issue = Issue.find(1)
     journal = issue.journals.reorder('created_on DESC').first
@@ -3393,7 +3407,7 @@ class IssuesControllerTest < ActionController::TestCase
                                                 :custom_field_values => {'2' => ''}}
 
     assert_response 302
-    assert_equal [group, group], Issue.find_all_by_id([1, 2]).collect {|i| i.assigned_to}
+    assert_equal [group, group], Issue.where(:id => [1, 2]).collect {|i| i.assigned_to}
   end
 
   def test_bulk_update_on_different_projects

@@ -948,9 +948,12 @@ class WikiControllerTest < ActionController::TestCase
     @request.session[:user_id] = 2
     assert_difference 'Attachment.count' do
       post :add_attachment, :project_id => 1, :id => 'CookBook_documentation',
-        :attachments => {'1' => {'file' => uploaded_test_file('testfile.txt', 'text/plain'), 'description' => 'test file'}}
+           :attachments => {
+             '1' => {'file' => uploaded_test_file('testfile.txt', 'text/plain'),
+                     'description' => 'test file'}
+           }
     end
-    attachment = Attachment.first(:order => 'id DESC')
+    attachment = Attachment.order('id DESC').first
     assert_equal Wiki.find(1).find_page('CookBook_documentation'), attachment.container
   end
 end
