@@ -6,6 +6,9 @@ gem "coderay", "~> 1.1.0"
 gem "fastercsv", "~> 1.5.0", :platforms => [:mri_18, :mingw_18, :jruby]
 gem "builder", "3.0.0"
 gem "mime-types"
+gem 'rubyzip'
+gem 'zip-zip'
+gem 'axlsx'
 
 # Optional gem for LDAP authentication
 group :ldap do

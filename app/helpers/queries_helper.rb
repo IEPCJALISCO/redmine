@@ -90,22 +90,28 @@ module QueriesHelper
   end
   
   def column_value(column, issue, value)
-    case column.name
-    when :id
-      link_to value, issue_path(issue)
-    when :subject
-      link_to value, issue_path(issue)
-    when :description
-      issue.description? ? content_tag('div', textilizable(issue, :description), :class => "wiki") : ''
-    when :done_ratio
-      progress_bar(value, :width => '80px')
-    when :relations
-      other = value.other_issue(issue)
-      content_tag('span',
-        (l(value.label_for(issue)) + " " + link_to_issue(other, :subject => false, :tracker => false)).html_safe,
-        :class => value.css_classes_for(issue))
+
+    if column.name.to_s == 'cf_2'
+      #puts column.cf.attributes.name
+      number_to_currency(value)
     else
-      format_object(value)
+      case column.name
+      when :id
+        link_to value, issue_path(issue)
+      when :subject
+        link_to value, issue_path(issue)
+      when :description
+        issue.description? ? content_tag('div', textilizable(issue, :description), :class => "wiki") : ''
+      when :done_ratio
+        progress_bar(value, :width => '80px')
+      when :relations
+        other = value.other_issue(issue)
+        content_tag('span',
+          (l(value.label_for(issue)) + " " + link_to_issue(other, :subject => false, :tracker => false)).html_safe,
+          :class => value.css_classes_for(issue))
+      else
+        format_object(value)
+      end
     end
   end
 

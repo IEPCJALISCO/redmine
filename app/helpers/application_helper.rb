@@ -168,7 +168,11 @@ module ApplicationHelper
     when 'Fixnum'
       object.to_s
     when 'Float'
-      sprintf "%.2f", object
+      if object.class.name
+        number_to_currency(object)
+      else
+        sprintf "%.2f", object
+      end
     when 'User'
       html ? link_to_user(object) : object.to_s
     when 'Project'
